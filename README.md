@@ -86,13 +86,13 @@ FROM openjdk:8-jdk
 LABEL maintainer="mail@thejonsey.com"
 EXPOSE 8080
 HEALTHCHECK --interval=5m --timeout=5s  \
-	CMD curl -f http://localhost:8080/actuator/health || exit 1
+    CMD curl -f http://localhost:8080/actuator/health || exit 1
 WORKDIR /usr/share/app
 
 COPY . .
 
 RUN mvn clean package \
-	mv target/*.jar app.jar
+    mv target/*.jar app.jar
 
 CMD ["-jar", "/usr/share/app/app.jar"]
 
@@ -112,10 +112,10 @@ A very basic service configuration would be:
 ```yaml
 version: "3.7" -- The version of docker compose to use
 services: -- A list of services inside the docker-compose file
-	web: -- the name of a service in the application
-		image: example:latest -- The image to use for this service
-		container_name: -- the name of the container
-	db:
+    web: -- the name of a service in the application
+        image: example:latest -- The image to use for this service
+        container_name: -- the name of the container
+    db:
 
 ```
 
@@ -133,14 +133,14 @@ There is a lot of configuration that can be done to services such as
 
 ```yaml
 services:
-	a:
-		environment:
-			ip: 10.0.0.1,
-			env: staging
-	b:
-		environment:
-			- ip=10.0.0.1
-			- env=staging
+    a:
+        environment:
+            ip: 10.0.0.1,
+            env: staging
+    b:
+        environment:
+            - ip=10.0.0.1
+            - env=staging
 ```
 
 - `expose` - expose ports to linked services
@@ -149,23 +149,23 @@ services:
 
 ```yaml
 services:
-	a:
-		extra_hosts:
-			- "abc.def:1.2.3.4"
-			- "service_name:127.0.0.1"
+    a:
+        extra_hosts:
+            - "abc.def:1.2.3.4"
+            - "service_name:127.0.0.1"
 ```
 
 - `healthcheck` Override the default healthcheck for the image as shown below
 
 ```yaml
 services:
-	a:
-		healthcheck:
-		  test: ["CMD", "curl", "-f", "http://localhost"]
-		  interval: 1m30s
-		  timeout: 10s
-		  retries: 3
-		  start_period: 40s
+    a:
+        healthcheck:
+          test: ["CMD", "curl", "-f", "http://localhost"]
+          interval: 1m30s
+          timeout: 10s
+          retries: 3
+          start_period: 40s
 ```
 
 - `network_mode` - The network driver to use, as specified in
@@ -174,10 +174,10 @@ Also the network_mode can directly point to another service in the same docker-c
 
 ```yaml
 services:
-	a:
-		network_mode: "container:example_container_1" -- pointing at external service
-	b:
-		network_mode: "service:a" -- pointing at service a
+    a:
+        network_mode: "container:example_container_1" -- pointing at external service
+    b:
+        network_mode: "service:a" -- pointing at service a
 ```
 
 - `ports` - Exposes ports to the host machine and external network, this is a list, and is defined as `HOST:CONTAINER` so `8080:80` would expose port 80 in the container to port 8080 on the host
@@ -190,22 +190,22 @@ docker-compose can build the image before running if the image isn't found in th
 
 ```yaml
 services:
-	web:
-		image: example:latest --image is built with this name and tag 
-		build: ./web
+    web:
+        image: example:latest --image is built with this name and tag 
+        build: ./web
 ```
 
 or it can have configuration options as shown below:
 
 ```yaml
 services:
-	web:
-		build:
-			context: ./dir --folder to build from
-			dockerfile: Dockerfile-2 --can point at an alternate Dockerfile
-			args:
-				ver: 2.5 --passes arguments to the build process
-		image: example:latest --image is built with this name and tag 
+    web:
+        build:
+            context: ./dir --folder to build from
+            dockerfile: Dockerfile-2 --can point at an alternate Dockerfile
+            args:
+                ver: 2.5 --passes arguments to the build process
+        image: example:latest --image is built with this name and tag 
 ```
 
 ## Volume Configuration
@@ -218,27 +218,27 @@ The volumes, like the ports, are defined as `HOST:CONTAINER` as below:
 
 ```yaml
 service:
-	example:
-		volumes:
-		  # Specify an absolute path mapping
-		  - /opt/data:/var/lib/mysql
-		
-		  # Path on the host, relative to the Compose file
-		  - ./cache:/tmp/cache
-		
-		  # User-relative path
-		  - ~/configs:/etc/configs/:ro
-		
-		  # Named volume
-		  - datavolume:/var/lib/mysql
+    example:
+        volumes:
+          # Specify an absolute path mapping
+          - /opt/data:/var/lib/mysql
+        
+          # Path on the host, relative to the Compose file
+          - ./cache:/tmp/cache
+        
+          # User-relative path
+          - ~/configs:/etc/configs/:ro
+        
+          # Named volume
+          - datavolume:/var/lib/mysql
 ```
 
 ### Long config
 
 ```yaml
 services:
-	web:
-		volumes:
+    web:
+        volumes:
       - type: volume -- default type of volume, managed by docker
         source: ./mydata --host directory
         target: /data -- container directory
@@ -247,7 +247,7 @@ services:
       - type: bind -- files are mounted from the host to the container
         source: ./static
         target: /opt/app/static
-				read_only: true -- fairly self explanatory
+                read_only: true -- fairly self explanatory
 ```
 
 ## Secrets Configuration
@@ -288,30 +288,30 @@ Generally the most configuration you will do for networks is something that look
 
 ```yaml
 services:
-	example:
-		networks:
-			- example_network
+    example:
+        networks:
+            - example_network
 
 networks:
-	example_network:
-		driver: host -- if you are using the bridge driver, you dont need this line
+    example_network:
+        driver: host -- if you are using the bridge driver, you dont need this line
 ```
 
 services can also have aliases (other hostnames) configured for them, for other services to access them via, they can also have a static ipv4 and ipv6 address set against them, as shown below
 
 ```yaml
 services:
-	example:
-		networks:
-			example_network:
-				aliases:
-					- web-app
-				ipv4_address: 10.0.0.1
-				ipv6_address: 2001:3984:3989::10
+    example:
+        networks:
+            example_network:
+                aliases:
+                    - web-app
+                ipv4_address: 10.0.0.1
+                ipv6_address: 2001:3984:3989::10
 
 networks:
-	example_network:
-		driver: host -- if you are using the bridge driver, you dont need this line
+    example_network:
+        driver: host -- if you are using the bridge driver, you dont need this line
 ```
 
 so other other containers connected to the same network can send a request to that service via:
@@ -325,18 +325,18 @@ if you want to set a network to be accessible from standalone containers or serv
 
 ```yaml
 networks:
-	example_network:
-		attachable: true
-		name: example
+    example_network:
+        attachable: true
+        name: example
 ```
 
 then to connect to this network from another docker-compose, you configure it as:
 
 ```yaml
 networks:
-	example_network:
-		external: true
-		name: example
+    example_network:
+        external: true
+        name: example
 ```
 
 ## Example
@@ -345,18 +345,18 @@ networks:
 version: '2'
 services:
   mailhog:
-		container_name: mailhog
+        container_name: mailhog
     image: mailhog/mailhog
     ports:
       - '1025:1025'
       - '8025:8025'
   app:
-		container_name: spring
+        container_name: spring
     build: .
-		image: the-jonsey/spring-app:latest
-		depends_on:
-			- mailhog
-		ports:
+        image: the-jonsey/spring-app:latest
+        depends_on:
+            - mailhog
+        ports:
       - '8001:8001'
     links:
       - "mailhog:smtp"
@@ -679,52 +679,52 @@ an example of using these would be:
 name: Push to ECS
 
 on:
-	push:
-		branches: master
+    push:
+        branches: master
 
 jobs:
-	build:
-		runs-on: ubuntu-latest
+    build:
+        runs-on: ubuntu-latest
 
-		steps:
-			- name: Configure AWS Credentials
-	      uses: aws-actions/configure-aws-credentials@v1
-	      with:
+        steps:
+            - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v1
+          with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-2
 
-			- name: Login to Amazon ECR
-	      id: login-ecr
-	      uses: aws-actions/amazon-ecr-login@v1
+            - name: Login to Amazon ECR
+          id: login-ecr
+          uses: aws-actions/amazon-ecr-login@v1
 
-	    - name: Build, tag, and push image to Amazon ECR
-	      env:
-	        ECR_REGISTRY: ${{ secrets.registry }}
-	        ECR_REPOSITORY: ${{ secrets.repo }}
-	        IMAGE_TAG: ${{ github.sha }}
-	      run: |
-	        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-	        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-	
-	    - name: Logout of Amazon ECR
-	      if: always()
-	      run: docker logout ${{ secrets.registry }}
+        - name: Build, tag, and push image to Amazon ECR
+          env:
+            ECR_REGISTRY: ${{ secrets.registry }}
+            ECR_REPOSITORY: ${{ secrets.repo }}
+            IMAGE_TAG: ${{ github.sha }}
+          run: |
+            docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    
+        - name: Logout of Amazon ECR
+          if: always()
+          run: docker logout ${{ secrets.registry }}
 
-			- name: Render Amazon ECS task definition
-	      id: render-web-container
-	      uses: aws-actions/amazon-ecs-render-task-definition@v1
-	      with:
-	        task-definition: task-definition.json
-	        container-name: back-end
-	        image: ${{ secrets.registry }}/${{ secrets.repo }}:${{ github.sha }}
-	
-	    - name: Deploy to Amazon ECS service
-	      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-	      with:
-	        task-definition: ${{ steps.render-web-container.outputs.task-definition }}
-	        service: back-end
-	        cluster: staging
+            - name: Render Amazon ECS task definition
+          id: render-web-container
+          uses: aws-actions/amazon-ecs-render-task-definition@v1
+          with:
+            task-definition: task-definition.json
+            container-name: back-end
+            image: ${{ secrets.registry }}/${{ secrets.repo }}:${{ github.sha }}
+    
+        - name: Deploy to Amazon ECS service
+          uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+          with:
+            task-definition: ${{ steps.render-web-container.outputs.task-definition }}
+            service: back-end
+            cluster: staging
 ```
 
 ## Manual → VPS
